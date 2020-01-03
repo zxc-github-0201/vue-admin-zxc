@@ -42,6 +42,21 @@
                 <el-form-item label="介绍">
                     <el-input v-model="form.description"></el-input>
                 </el-form-item>
+                <el-form-item label="产品主图">
+                    <el-upload
+                        class="upload-demo"
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :before-remove="beforeRemove"
+                        multiple
+                        :limit="3"
+                        :on-exceed="handleExceed"
+                        :file-list="fileList">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                    </el-upload>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
             <el-button size="small" @click="closeModalHandler">取 消</el-button>
@@ -56,6 +71,18 @@ import request from '@/utils/request'
 import querystring from 'querystring'
 export default {
     methods:{
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+         },
+        handlePreview(file) {
+            console.log(file);
+        },
+        handleExceed(files, fileList) {
+            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+         },
+        beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${ file.name }？`);
+        },
         loadData(){
             let url = "http://localhost:6677/product/findAll"
             request.get(url).then((response)=>{
@@ -114,12 +141,16 @@ export default {
         }
     },
     data(){
+        {
+        fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
+      };
         return{
             visible:false,
             products:[],
             form:{
                 
             }
+            
         }
     },
     created(){
